@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <title>DOCUMENTOS EM PROCESSO</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border-left-color: #09f;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            display: none;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>DOCUMENTOS EM PROCESSO</h1>
+
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>Carregando dados...</p>
+    </div>
+
+    <table id="dadosTabelaContainer">
+        <thead>
+            <tr>
+                <th>Cidade</th>
+                <th>UF</th>
+                <th>Número de Documentos</th>
+            </tr>
+        </thead>
+        <tbody id="dadosTabela">
+            <!-- Os dados serão inseridos aqui pelo JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        const url = 'https://api.gerenciapp.online/outbound/nfse/em_processo?';
+
+        async function buscarDados() {
+            const loadingDiv = document.getElementById('loading');
+            const tabelaContainer = document.getElementById('dadosTabelaContainer');
+            const tbody = document.getElementById('dadosTabela');
+
+            try {
+                // Exibe o loading e esconde a tabela
+                loadingDiv.style.display = 'block';
+                tabelaContainer.style.display = 'none';
+
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Erro ao buscar dados: ${response.statusText}`);
+                }
+
+                const textData = await response.text();
+
+                // Criar um elemento temporário para parsear o HTML e extrair o conteúdo da tag <body>
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(textData, 'text/html');
+                const bodyTag = doc.querySelector('body');
+
+                if (!bodyTag) {
+                    throw new Error('Tag <body> não encontrada na resposta');
+                }
+
+                const jsonData = JSON.parse(bodyTag.textContent);
+
+                // Limpa os dados da tabela
+                tbody.innerHTML = '';
+
+                // Ordena os dados em ordem decrescente com base em 'docs'
+                const dadosOrdenados = jsonData.sort((a, b) => b.docs - a.docs);
+
+                if (dadosOrdenados.length > 0) {
+                    dadosOrdenados.forEach(cidade => {
+                        // Ignorar entradas vazias (com código_municipio vazio, por exemplo)
+                        if (!cidade.cidade) return;
+
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${cidade.cidade}</td>
+                            <td>${cidade.uf}</td>
+                            <td>${cidade.docs}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="3">Nenhuma cidade encontrada</td></tr>';
+                }
+
+                // Esconde o loading e exibe a tabela
+                loadingDiv.style.display = 'none';
+                tabelaContainer.style.display = 'table';
+            } catch (error) {
+                console.error('Erro:', error);
+                tbody.innerHTML = `<tr><td colspan="3">Erro ao carregar dados: ${error.message}</td></tr>`;
+                loadingDiv.style.display = 'none';
+                tabelaContainer.style.display = 'table';
+            }
+        }
+
+        // Primeira chamada ao carregar a página
+        document.addEventListener('DOMContentLoaded', buscarDados);
+
+        // Atualizar a cada 3 minutos (180000 ms)
+        setInterval(buscarDados, 180000);
+    </script>
+</body>
+
+</html>
