@@ -3,19 +3,18 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>NFSe EM PROCESSO - CIDADES</title>
-<link rel="stylesheet" href="style.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
+    <title>NFSe EM PROCESSO - TENANTS</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <h1>NFSe EM PROCESSO</h1>
-
     <menu>
-        <div><a class="button-10 button-10-travado" href="" onclick="event.preventDefault();">Munícipios</a></div>
-        <div><a class="button-10" href="tenants.html" >Tenants</a></div>
+        <div><a class="button-10 " href="index.html">Munícipios</a></div>
+        <div><a class="button-10 button-10-travado"  href="" onclick="event.preventDefault();">Tenants</a></div>
     </menu>
 
     <div class="loading" id="loading">
@@ -27,8 +26,8 @@
     <table id="dadosTabelaContainer">
         <thead>
             <tr>
-                <th>Cidade</th>
-                <th>UF</th>
+                <th>Cliente</th>
+                <th>Conector</th>
                 <th>Número de Documentos</th>
             </tr>
         </thead>
@@ -37,8 +36,8 @@
         </tbody>
     </table>
 
-    <script src="./cidades.js">
-     
+    <script src="./tenants.js">
+   
     </script>
 </body>
 
