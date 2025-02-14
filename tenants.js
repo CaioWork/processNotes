@@ -1,4 +1,4 @@
-    // const url = 'https://api.gerenciapp.online/outbound/nfse/em_processo_cliente?';
+     const url = 'https://api.gerenciapp.online/outbound/nfse/em_processo_cliente?';
 
     async function buscarDados() {
         const loadingDiv = document.getElementById('loading');
